@@ -1,0 +1,789 @@
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> db.npiInfo.find(
+...     {
+...         "specialty_desc":"Allergy/ Immunology"
+...     },
+...     {
+...         "nppes_provider_first_name":1,
+...         "nppes_provider_mi":1,
+...         "nppes_provider_last_org_name":1,
+...         "_id":0
+...     }
+... ).pretty()
+{
+	"nppes_provider_first_name" : "JOSE",
+	"nppes_provider_mi" : "R",
+	"nppes_provider_last_org_name" : "ZARAGOZA-BUXO"
+}
+{
+	"nppes_provider_first_name" : "MARC",
+	"nppes_provider_mi" : "F",
+	"nppes_provider_last_org_name" : "GOLDSTEIN"
+}
+{
+	"nppes_provider_first_name" : "HAROLD",
+	"nppes_provider_mi" : "C",
+	"nppes_provider_last_org_name" : "OCHSNER"
+}
+{
+	"nppes_provider_first_name" : "JOSEPH",
+	"nppes_provider_mi" : "D",
+	"nppes_provider_last_org_name" : "CHUN"
+}
+{
+	"nppes_provider_first_name" : "GARY",
+	"nppes_provider_mi" : "A",
+	"nppes_provider_last_org_name" : "COHEN"
+}
+
+
+
+
+
+
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> matchStage = { "$match" : { "nppes_provider_last_org_name" : "HOLDEFER PENUEL" } }
+{ "$match" : { "nppes_provider_last_org_name" : "HOLDEFER PENUEL" } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> unwindStage = { "$unwind" : "$drugs" }
+{ "$unwind" : "$drugs" }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> comparisonStage = { "$match" : { "drugs.total_claim_count" : { "$gt" : 30 } } }
+{ "$match" : { "drugs.total_claim_count" : { "$gt" : 30 } } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> projectStage = { "$project" : { "drug_name" : "$drugs.drug_name", "_id" : 0 } }
+{ "$project" : { "drug_name" : "$drugs.drug_name", "_id" : 0 } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> db.npiInfo.aggregate([matchStage, unwindStage, comparisonStage, projectStage]).pretty()
+{ "drug_name" : "GAVILYTE-G" }
+
+
+
+
+
+
+
+
+
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> matchStage = {
+...         "$match" : {
+...                 "$and" : [
+...                         {
+...                                 "nppes_provider_state" : "PA"
+...                         },
+...                         {
+...                                 "specialty_desc" : "Allergy/ Immunology"
+...                         }
+...                 ]
+...         }
+... }
+{
+	"$match" : {
+		"$and" : [
+			{
+				"nppes_provider_state" : "PA"
+			},
+			{
+				"specialty_desc" : "Allergy/ Immunology"
+			}
+		]
+	}
+}
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> unwindStage = { "$unwind" : "$drugs" }
+{ "$unwind" : "$drugs" }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> groupStage = { "$group" : { "_id" : "$drugs.drug_name" } }
+{ "$group" : { "_id" : "$drugs.drug_name" } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> projectStage = { "$project" : { "drug_name" : "$_id", "_id" : 0 } }
+{ "$project" : { "drug_name" : "$_id", "_id" : 0 } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> db.npiInfo.aggregate([matchStage, unwindStage, groupStage, projectStage]).pretty()
+{ "drug_name" : "IPRATROPIUM BROMIDE" }
+{ "drug_name" : "LEVOCETIRIZINE DIHYDROCHLORIDE" }
+{ "drug_name" : "PROAIR HFA" }
+{ "drug_name" : "PREDNISONE" }
+{ "drug_name" : "EPINEPHRINE" }
+{ "drug_name" : "OMEPRAZOLE" }
+{ "drug_name" : "ADVAIR HFA" }
+{ "drug_name" : "ADVAIR DISKUS" }
+{ "drug_name" : "PAZEO" }
+{ "drug_name" : "TRIAMCINOLONE ACETONIDE" }
+{ "drug_name" : "SPIRIVA RESPIMAT" }
+{ "drug_name" : "DULERA" }
+{ "drug_name" : "DYMISTA" }
+{ "drug_name" : "PROAIR RESPICLICK" }
+{ "drug_name" : "AZITHROMYCIN" }
+{ "drug_name" : "BREO ELLIPTA" }
+{ "drug_name" : "GAMMAGARD LIQUID" }
+{ "drug_name" : "MONTELUKAST SODIUM" }
+{ "drug_name" : "FLUTICASONE PROPIONATE" }
+{ "drug_name" : "SYMBICORT" }
+
+
+
+
+
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> matchStage = {    
+...         "$match" : {
+...                 "$and" : [
+...                         {
+...                                 "nppes_provider_gender" : "M"
+...                         },
+...                         {
+...                                 "specialty_desc" : "Otolaryngology"
+...                         }     
+...                 ]
+...         }
+... }
+{
+	"$match" : {
+		"$and" : [
+			{
+				"nppes_provider_gender" : "M"
+			},
+			{
+				"specialty_desc" : "Otolaryngology"
+			}
+		]
+	}
+}
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> unwindStage = { "$unwind" : "$services" }
+{ "$unwind" : "$services" }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> groupStage = { "$group" : { "_id" : "$services.hcpcs_description" } }
+{ "$group" : { "_id" : "$services.hcpcs_description" } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> projectStage = { "$project" : { "hcpcs_description" : "$_id", "_id" : 0 } }
+{ "$project" : { "hcpcs_description" : "$_id", "_id" : 0 } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> db.npiInfo.aggregate([matchStage, unwindStage, groupStage, projectStage]).pretty()
+{ "hcpcs_description" : "Removal of impact ear wax, one ear" }
+{
+	"hcpcs_description" : "New patient office or other outpatient visit, typically 45 minutes"
+}
+{
+	"hcpcs_description" : "Established patient office or other outpatient visit, typically 15 minutes"
+}
+{
+	"hcpcs_description" : "Initial hospital inpatient care, typically 50 minutes per day"
+}
+{
+	"hcpcs_description" : "Established patient office or other outpatient, visit typically 25 minutes"
+}
+{
+	"hcpcs_description" : "New patient office or other outpatient visit, typically 30 minutes"
+}
+{
+	"hcpcs_description" : "Diagnostic examination of nasal passages using an endoscope"
+}
+{
+	"hcpcs_description" : "Diagnostic examination of voice box using flexible endoscope"
+}
+
+
+
+
+
+
+
+
+
+
+
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> matchStage = { "$match" : { "nppes_provider_state" : "CA" } }
+{ "$match" : { "nppes_provider_state" : "CA" } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> unwindStage = { "$unwind" : "$drugs" }
+{ "$unwind" : "$drugs" }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> groupStage = {
+...         "$group" : {
+...                 "_id" : "$drugs.drug_name",
+...                 "min_drug_cost" : {
+...                         "$min" : "$drugs.total_drug_cost"
+...                 }
+...         }
+... }
+{
+	"$group" : {
+		"_id" : "$drugs.drug_name",
+		"min_drug_cost" : {
+			"$min" : "$drugs.total_drug_cost"
+		}
+	}
+}
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> sortStage = { "$sort" : { "min_drug_cost" : 1 } }
+{ "$sort" : { "min_drug_cost" : 1 } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> limitStage = { "$limit" : 2 }
+{ "$limit" : 2 }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> projectStage = { "$project" : { "_id" : 0, "drug_name" : "$_id" } }
+{ "$project" : { "_id" : 0, "drug_name" : "$_id" } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> db.npiInfo.aggregate([matchStage, unwindStage, groupStage, sortStage, limitStage, projectStage]).pretty()
+{ "drug_name" : "AMLODIPINE BESYLATE" }
+{ "drug_name" : "FLUCONAZOLE" }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> unwindStage = { "$unwind" : "$services" }
+{ "$unwind" : "$services" }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> derivedFieldStage = {
+...         "$addFields" : {
+...                 "charge_to_beneficiaries" : {
+...                         "$subtract" : [
+...                                 "$services.average_submitted_chrg_amt",
+...                                 "$services.average_medicare_payment_amt"
+...                         ]
+...                 }
+...         }
+... }
+{
+	"$addFields" : {
+		"charge_to_beneficiaries" : {
+			"$subtract" : [
+				"$services.average_submitted_chrg_amt",
+				"$services.average_medicare_payment_amt"
+			]
+		}
+	}
+}
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> sortStage = { "$sort" : { "charge_to_beneficiaries" : 1 } }
+{ "$sort" : { "charge_to_beneficiaries" : 1 } }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> limitStage = { "$limit" : 1 }
+{ "$limit" : 1 }
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> projectStage = {
+...         "$project" : {
+...                 "specialty_desc" : 1,
+...                 "drugs.drug_name" : 1,
+...                 "_id" : 0
+...         }
+... }
+{
+	"$project" : {
+		"specialty_desc" : 1,
+		"drugs.drug_name" : 1,
+		"_id" : 0
+	}
+}
+MongoDB Enterprise Cluster0-shard-0:PRIMARY> db.npiInfo.aggregate([unwindStage, addingNewFieldStage, sortStage, limitStage, projectStage]).pretty()
+{
+	"specialty_desc" : "Allergy/ Immunology",
+	"drugs" : [
+		{
+			"drug_name" : "CREON"
+		},
+		{
+			"drug_name" : "ZENPEP"
+		},
+		{
+			"drug_name" : "EXELON"
+		},
+		{
+			"drug_name" : "FENOFIBRATE"
+		},
+		{
+			"drug_name" : "AMLODIPINE BESYLATE"
+		},
+		{
+			"drug_name" : "CROMOLYN SODIUM"
+		},
+		{
+			"drug_name" : "MELOXICAM"
+		},
+		{
+			"drug_name" : "CHLORTHALIDONE"
+		},
+		{
+			"drug_name" : "KETOCONAZOLE"
+		},
+		{
+			"drug_name" : "PIOGLITAZONE HCL"
+		},
+		{
+			"drug_name" : "OXAZEPAM"
+		},
+		{
+			"drug_name" : "REPAGLINIDE"
+		},
+		{
+			"drug_name" : "TOUJEO SOLOSTAR"
+		},
+		{
+			"drug_name" : "BENICAR"
+		},
+		{
+			"drug_name" : "ALPRAZOLAM"
+		},
+		{
+			"drug_name" : "SYNTHROID"
+		},
+		{
+			"drug_name" : "MEMANTINE HCL"
+		},
+		{
+			"drug_name" : "ESOMEPRAZOLE MAGNESIUM"
+		},
+		{
+			"drug_name" : "METFORMIN HCL"
+		},
+		{
+			"drug_name" : "AMIODARONE HCL"
+		},
+		{
+			"drug_name" : "ACETAMINOPHEN-CODEINE"
+		},
+		{
+			"drug_name" : "OLMESARTAN MEDOXOMIL"
+		},
+		{
+			"drug_name" : "OMEPRAZOLE"
+		},
+		{
+			"drug_name" : "AMITRIPTYLINE HCL"
+		},
+		{
+			"drug_name" : "PROCTOSOL-HC"
+		},
+		{
+			"drug_name" : "GLIPIZIDE-METFORMIN"
+		},
+		{
+			"drug_name" : "RESTASIS"
+		},
+		{
+			"drug_name" : "RALOXIFENE HCL"
+		},
+		{
+			"drug_name" : "BYSTOLIC"
+		},
+		{
+			"drug_name" : "LEVOCETIRIZINE DIHYDROCHLORIDE"
+		},
+		{
+			"drug_name" : "RISEDRONATE SODIUM"
+		},
+		{
+			"drug_name" : "PRAVASTATIN SODIUM"
+		},
+		{
+			"drug_name" : "METOPROLOL SUCCINATE"
+		},
+		{
+			"drug_name" : "RIVASTIGMINE"
+		},
+		{
+			"drug_name" : "CIPROFLOXACIN HCL"
+		},
+		{
+			"drug_name" : "CEPHALEXIN"
+		},
+		{
+			"drug_name" : "ATROVENT HFA"
+		},
+		{
+			"drug_name" : "SERTRALINE HCL"
+		},
+		{
+			"drug_name" : "MEGESTROL ACETATE"
+		},
+		{
+			"drug_name" : "ULTRA-FINE MINI PEN NEEDLE"
+		},
+		{
+			"drug_name" : "BREO ELLIPTA"
+		},
+		{
+			"drug_name" : "FLUOCINONIDE"
+		},
+		{
+			"drug_name" : "FAMOTIDINE"
+		},
+		{
+			"drug_name" : "CLONAZEPAM"
+		},
+		{
+			"drug_name" : "MONTELUKAST SODIUM"
+		},
+		{
+			"drug_name" : "SODIUM CHLORIDE"
+		},
+		{
+			"drug_name" : "AMLODIPINE-VALSARTAN"
+		},
+		{
+			"drug_name" : "TRIAMTERENE-HYDROCHLOROTHIAZID"
+		},
+		{
+			"drug_name" : "NEXIUM"
+		},
+		{
+			"drug_name" : "ALENDRONATE SODIUM"
+		},
+		{
+			"drug_name" : "DUTASTERIDE-TAMSULOSIN"
+		},
+		{
+			"drug_name" : "CLOPIDOGREL"
+		},
+		{
+			"drug_name" : "NOVOLOG FLEXPEN"
+		},
+		{
+			"drug_name" : "NIFEDIPINE ER"
+		},
+		{
+			"drug_name" : "TRAMADOL HCL"
+		},
+		{
+			"drug_name" : "TEMAZEPAM"
+		},
+		{
+			"drug_name" : "ECONAZOLE NITRATE"
+		},
+		{
+			"drug_name" : "DONEPEZIL HCL"
+		},
+		{
+			"drug_name" : "IBUPROFEN"
+		},
+		{
+			"drug_name" : "CLONIDINE HCL"
+		},
+		{
+			"drug_name" : "GEMFIBROZIL"
+		},
+		{
+			"drug_name" : "GLIMEPIRIDE"
+		},
+		{
+			"drug_name" : "INVOKANA"
+		},
+		{
+			"drug_name" : "LINZESS"
+		},
+		{
+			"drug_name" : "CLOTRIMAZOLE-BETAMETHASONE"
+		},
+		{
+			"drug_name" : "BENICAR HCT"
+		},
+		{
+			"drug_name" : "NASONEX"
+		},
+		{
+			"drug_name" : "LANTUS SOLOSTAR"
+		},
+		{
+			"drug_name" : "TELMISARTAN"
+		},
+		{
+			"drug_name" : "MECLIZINE HCL"
+		},
+		{
+			"drug_name" : "AZITHROMYCIN"
+		},
+		{
+			"drug_name" : "PANTOPRAZOLE SODIUM"
+		},
+		{
+			"drug_name" : "ADVAIR DISKUS"
+		},
+		{
+			"drug_name" : "ENALAPRIL MALEATE"
+		},
+		{
+			"drug_name" : "TRADJENTA"
+		},
+		{
+			"drug_name" : "FLUOXETINE HCL"
+		},
+		{
+			"drug_name" : "AMOXICILLIN"
+		},
+		{
+			"drug_name" : "PATADAY"
+		},
+		{
+			"drug_name" : "DICLOFENAC SODIUM"
+		},
+		{
+			"drug_name" : "POTASSIUM CHLORIDE"
+		},
+		{
+			"drug_name" : "PREDNISONE"
+		},
+		{
+			"drug_name" : "AMOXICILLIN-CLAVULANATE POTASS"
+		},
+		{
+			"drug_name" : "PROLIA"
+		},
+		{
+			"drug_name" : "GLIPIZIDE"
+		},
+		{
+			"drug_name" : "IBANDRONATE SODIUM"
+		},
+		{
+			"drug_name" : "LOVASTATIN"
+		},
+		{
+			"drug_name" : "HYDROCODONE-ACETAMINOPHEN"
+		},
+		{
+			"drug_name" : "LISINOPRIL"
+		},
+		{
+			"drug_name" : "METFORMIN HCL ER"
+		},
+		{
+			"drug_name" : "RANITIDINE HCL"
+		},
+		{
+			"drug_name" : "ROSUVASTATIN CALCIUM"
+		},
+		{
+			"drug_name" : "BENAZEPRIL HCL"
+		},
+		{
+			"drug_name" : "LEVEMIR FLEXTOUCH"
+		},
+		{
+			"drug_name" : "ALLOPURINOL"
+		},
+		{
+			"drug_name" : "DOXAZOSIN MESYLATE"
+		},
+		{
+			"drug_name" : "VOLTAREN"
+		},
+		{
+			"drug_name" : "CARVEDILOL"
+		},
+		{
+			"drug_name" : "GENERLAC"
+		},
+		{
+			"drug_name" : "ULTRA-FINE NANO PEN NEEDLE"
+		},
+		{
+			"drug_name" : "AMLODIPINE-OLMESARTAN"
+		},
+		{
+			"drug_name" : "WARFARIN SODIUM"
+		},
+		{
+			"drug_name" : "ATENOLOL"
+		},
+		{
+			"drug_name" : "ENBREL"
+		},
+		{
+			"drug_name" : "SIMVASTATIN"
+		},
+		{
+			"drug_name" : "LISINOPRIL-HYDROCHLOROTHIAZIDE"
+		},
+		{
+			"drug_name" : "FENOFIBRATE"
+		},
+		{
+			"drug_name" : "JARDIANCE"
+		},
+		{
+			"drug_name" : "ACYCLOVIR"
+		},
+		{
+			"drug_name" : "HYDROMORPHONE HCL"
+		},
+		{
+			"drug_name" : "DILTIAZEM 24HR ER"
+		},
+		{
+			"drug_name" : "LOSARTAN-HYDROCHLOROTHIAZIDE"
+		},
+		{
+			"drug_name" : "OXYBUTYNIN CHLORIDE"
+		},
+		{
+			"drug_name" : "DOXEPIN HCL"
+		},
+		{
+			"drug_name" : "ISOSORBIDE MONONITRATE ER"
+		},
+		{
+			"drug_name" : "CELECOXIB"
+		},
+		{
+			"drug_name" : "TAMSULOSIN HCL"
+		},
+		{
+			"drug_name" : "METOPROLOL TARTRATE"
+		},
+		{
+			"drug_name" : "PREMPRO"
+		},
+		{
+			"drug_name" : "TRIAMCINOLONE ACETONIDE"
+		},
+		{
+			"drug_name" : "DUTASTERIDE"
+		},
+		{
+			"drug_name" : "HUMALOG KWIKPEN U-100"
+		},
+		{
+			"drug_name" : "CLOBETASOL PROPIONATE"
+		},
+		{
+			"drug_name" : "CICLOPIROX"
+		},
+		{
+			"drug_name" : "FUROSEMIDE"
+		},
+		{
+			"drug_name" : "AZELASTINE HCL"
+		},
+		{
+			"drug_name" : "VENTOLIN HFA"
+		},
+		{
+			"drug_name" : "ATORVASTATIN CALCIUM"
+		},
+		{
+			"drug_name" : "ZOSTAVAX"
+		},
+		{
+			"drug_name" : "LOSARTAN POTASSIUM"
+		},
+		{
+			"drug_name" : "ANORO ELLIPTA"
+		},
+		{
+			"drug_name" : "JANUVIA"
+		},
+		{
+			"drug_name" : "AZOR"
+		},
+		{
+			"drug_name" : "CRESTOR"
+		},
+		{
+			"drug_name" : "LORAZEPAM"
+		},
+		{
+			"drug_name" : "NITROFURANTOIN MONO-MACRO"
+		},
+		{
+			"drug_name" : "LYRICA"
+		},
+		{
+			"drug_name" : "FLUTICASONE PROPIONATE"
+		},
+		{
+			"drug_name" : "VALSARTAN-HYDROCHLOROTHIAZIDE"
+		},
+		{
+			"drug_name" : "DEXILANT"
+		},
+		{
+			"drug_name" : "GABAPENTIN"
+		},
+		{
+			"drug_name" : "FINASTERIDE"
+		},
+		{
+			"drug_name" : "AMLODIPINE BESYLATE-BENAZEPRIL"
+		},
+		{
+			"drug_name" : "IPRATROPIUM BROMIDE"
+		},
+		{
+			"drug_name" : "PAZEO"
+		},
+		{
+			"drug_name" : "GLIPIZIDE XL"
+		},
+		{
+			"drug_name" : "BETAMETHASONE VALERATE"
+		},
+		{
+			"drug_name" : "EZETIMIBE"
+		},
+		{
+			"drug_name" : "FLECAINIDE ACETATE"
+		},
+		{
+			"drug_name" : "SYMBICORT"
+		},
+		{
+			"drug_name" : "PROPRANOLOL HCL"
+		},
+		{
+			"drug_name" : "TRIAZOLAM"
+		},
+		{
+			"drug_name" : "LEVOTHYROXINE SODIUM"
+		},
+		{
+			"drug_name" : "LIDOCAINE"
+		},
+		{
+			"drug_name" : "PROAIR HFA"
+		},
+		{
+			"drug_name" : "VIREAD"
+		},
+		{
+			"drug_name" : "JANUMET"
+		},
+		{
+			"drug_name" : "NITROGLYCERIN"
+		},
+		{
+			"drug_name" : "OMEGA-3 ACID ETHYL ESTERS"
+		},
+		{
+			"drug_name" : "HYDROCHLOROTHIAZIDE"
+		},
+		{
+			"drug_name" : "OXYBUTYNIN CHLORIDE ER"
+		},
+		{
+			"drug_name" : "POLYETHYLENE GLYCOL 3350"
+		},
+		{
+			"drug_name" : "CITALOPRAM HBR"
+		},
+		{
+			"drug_name" : "VASCEPA"
+		},
+		{
+			"drug_name" : "HYDROXYZINE HCL"
+		},
+		{
+			"drug_name" : "MUPIROCIN"
+		},
+		{
+			"drug_name" : "ZOLPIDEM TARTRATE"
+		},
+		{
+			"drug_name" : "SPIRIVA"
+		},
+		{
+			"drug_name" : "VALSARTAN"
+		},
+		{
+			"drug_name" : "SULFAMETHOXAZOLE-TRIMETHOPRIM"
+		},
+		{
+			"drug_name" : "CALCITRIOL"
+		},
+		{
+			"drug_name" : "LUMIGAN"
+		},
+		{
+			"drug_name" : "XARELTO"
+		}
+	]
+}
