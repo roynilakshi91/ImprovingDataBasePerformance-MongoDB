@@ -1,0 +1,113 @@
+ db.npiInfo.find(
+    {
+        "specialty_desc":"Allergy/ Immunology"
+    },
+    {
+        "nppes_provider_first_name":1,
+        "nppes_provider_mi":1,
+        "nppes_provider_last_org_name":1,
+        "_id":0
+    }
+).pretty()
+
+
+
+
+matchStage = { "$match" : { "nppes_provider_last_org_name" : "HOLDEFER PENUEL" } }
+unwindStage = { "$unwind" : "$drugs" }
+comparisonStage = { "$match" : { "drugs.total_claim_count" : { "$gt" : 30 } } }
+projectStage = { "$project" : { "drug_name" : "$drugs.drug_name", "_id" : 0 } }
+db.npiInfo.aggregate([matchStage, unwindStage, comparisonStage, projectStage]).pretty()
+
+
+
+
+
+
+matchStage = {
+	"$match" : {
+		"$and" : [
+			{
+				"nppes_provider_state" : "PA"
+			},
+			{
+				"specialty_desc" : "Allergy/ Immunology"
+			}
+		]
+	}
+}
+unwindStage = { "$unwind" : "$drugs" }
+groupStage = { "$group" : { "_id" : "$drugs.drug_name" } }
+projectStage = { "$project" : { "drug_name" : "$_id", "_id" : 0 } }
+db.npiInfo.aggregate([matchStage, unwindStage, groupStage, projectStage]).pretty()
+
+
+
+
+
+matchStage = {
+        "$match" : {
+                "$and" : [
+                        {
+                                "nppes_provider_gender" : "M"
+                        },
+                        {
+                                "specialty_desc" : "Otolaryngology"
+                        }
+                ]
+        }
+}
+unwindStage = { "$unwind" : "$services" }
+groupStage = { "$group" : { "_id" : "$services.hcpcs_description" } }
+projectStage = { "$project" : { "hcpcs_description" : "$_id", "_id" : 0 } }
+db.npiInfo.aggregate([matchStage, unwindStage, groupStage, projectStage]).pretty()
+
+
+
+
+
+matchStage = { "$match" : { "nppes_provider_state" : "CA" } }
+unwindStage = { "$unwind" : "$drugs" }
+groupStage = {
+	"$group" : {
+		"_id" : "$drugs.drug_name",
+		"min_drug_cost" : {
+			"$min" : "$drugs.total_drug_cost"
+		}
+	}
+}
+sortStage = { "$sort" : { "min_drug_cost" : 1 } }
+limitStage = { "$limit" : 2 }
+projectStage = { "$project" : { "_id" : 0, "drug_name" : "$_id" } }
+db.npiInfo.aggregate([matchStage, unwindStage, groupStage, sortStage, limitStage, projectStage]).pretty()
+
+
+
+
+
+
+
+
+
+
+unwindStage = { "$unwind" : "$services" }
+derivedFieldStage = {
+	"$addFields" : {
+		"charge_to_beneficiaries" : {
+			"$subtract" : [
+				"$services.average_submitted_chrg_amt",
+				"$services.average_medicare_payment_amt"
+			]
+		}
+	}
+}
+sortStage = { "$sort" : { "charge_to_beneficiaries" : 1 } }
+limitStage = { "$limit" : 1 }
+projectStage = {
+	"$project" : {
+		"specialty_desc" : 1,
+		"drugs.drug_name" : 1,
+		"_id" : 0
+	}
+}
+db.npiInfo.aggregate([unwindStage, addingNewFieldStage, sortStage, limitStage, projectStage]).pretty()
