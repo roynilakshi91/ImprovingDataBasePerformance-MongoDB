@@ -9,6 +9,8 @@ MongoDB Enterprise Cluster0-shard-0:PRIMARY> db.npiInfo.find(
 ...         "_id":0
 ...     }
 ... ).pretty()
+
+
 {
 	"nppes_provider_first_name" : "JOSE",
 	"nppes_provider_mi" : "R",
