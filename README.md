@@ -1,6 +1,8 @@
 # Overview:
 
-This project explores how MongoDB document design, data embedding, and aggregation pipelines can be used to improve query performance when working with healthcare provider data.
+This project focuses on using millions of healthcare records (API), MongoDB data modeling, and comparing query performance with SQL.
+
+Showing how MongoDB document design, data embedding, and aggregation pipelines can be used to improve query performance when working with healthcare provider data.
 
 The project uses Medicare/Medicaid Provider Utilization and Payment Data from the Centers for Medicare & Medicaid Services (CMS). The data was extracted directly from data.cms.gov site in Json format using their API and storing it in AWS shared cluster, transformed into a MongoDB-friendly document structure, and loaded into MongoDB Atlas.
 
