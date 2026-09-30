@@ -45,7 +45,7 @@ MongoDB Atlas
 Query & Aggregation Analysis 
 
 
-NOTE: Additional records were generated using the Python Faker library to increase the dataset size and support performance testing under larger data volumes.
+NOTE: Additional millions of records were generated using the Python Faker library to increase the dataset size and support performance testing under larger data volumes.
 
 
 # Conclusion: 
