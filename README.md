@@ -30,18 +30,18 @@ The data is organized into a consolidated npiInfo collection, with related servi
 
 # Data Pipeline: ETL workflow:
 
-CMS API 
-   ↓
+CMS API
+   |
 JSON Data Extraction (in AWS shared cluster)
-   ↓
+   |
 Data Transformation
-   ↓
+   |
 MongoDB Document Modeling
-   ↓
+   |
 JSON Schema Validation
-   ↓
+   |
 MongoDB Atlas
-   ↓
+   |
 Query & Aggregation Analysis 
 
 
